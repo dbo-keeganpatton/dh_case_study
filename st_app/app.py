@@ -7,73 +7,30 @@ import matplotlib.pyplot as plt
 from sklearn.preprocessing import StandardScaler
 from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
-sys.path.append("./query_apis")
-from model_data import get_data
-conn = st.connection('case_study_db', type='sql')
+sys.path.append("./components/visuals/")
+sys.path.append("./components/data_sets/")
+from bx_plots import create_box_plot
 st.set_page_config(layout="wide")
-rfm_df = get_data()
 
 
-################################
-#           Recency            #
-###############################
-st.subheader("Customer Recency")
-rfm_df['visit_rank'] = rfm_df.sort_values(['prsn_id', 'date_id']).groupby(['prsn_id'])['date_id'].rank(method='min').astype(int)
-customer_last_visit_df = rfm_df[rfm_df['visit_rank']==1]
-customer_last_visit_df['date_id'] = pd.to_datetime(customer_last_visit_df['date_id'])
-customer_last_visit_df['time_from_last_visit'] = (
-    customer_last_visit_df['date_id'] - min(customer_last_visit_df['date_id']) 
-).dt.days
-st.write(customer_last_visit_df.head())
+#########################################
+#        s1. Data Exploration           #
+########################################
+st.markdown('''
+# :blue[Data Exploration]
+##### We start by identifying data features that can be used to distinguish customer Loyalty.
+1. The :blue[**Frequency**] of visits
+2. How :blue[**Recently**] each customer visited
+3. The amount that each customer has :blue[**Spent**].
+''')
 
-
-
-################################
-#           Frequency          #
-###############################
-st.subheader("Customer Freqency")
-customer_frequency_df = rfm_df.groupby('prsn_id')['transaction_code'].nunique().reset_index()
-customer_frequency_df.columns = ['prsn_id', 'visits']
-st.write(customer_frequency_df.head())
-st.divider()
-
-
-################################
-#           Spend             #
-###############################
-st.subheader("Customer Spend")
-rfm_df['net_spend_amt'] = rfm_df['net_spend_amt'].astype(float)
-customer_spend_df = rfm_df.groupby('prsn_id')['net_spend_amt'].sum().reset_index()
-customer_spend_df.columns = ['prsn_id', 'total_spend']
-st.write(customer_spend_df.head())
-st.divider()
-
-
-################################
-#           RFM DF             #
-###############################
-st.subheader("Customer RFM Profile")
-rf = customer_last_visit_df.merge(customer_frequency_df, on='prsn_id')
-rfm = rf.merge(customer_spend_df, on='prsn_id')
-rfm = rfm[['prsn_id', 'total_spend', 'visits', 'time_from_last_visit']]
-st.write(rfm.head())
-st.divider()
-
-
-###############################
-#     Distribution Viz        #
-##############################
-st.subheader("Data Distribution")
+st.header('Box Plot')
 field_list = ['total_spend', 'visits', 'time_from_last_visit']
 with st.container():
     cols = st.columns(3)
     for item, col in zip(field_list, cols):
         with col:
-            fig, ax = plt.subplots()
-            ax.boxplot(rfm[item], vert=False) 
-            ax.set_title(item)
-            st.pyplot(fig)   
-st.divider()
+           create_box_plot(item)
 
 
 ###############################
