@@ -37,7 +37,7 @@ print(f"{null_prod_desc_count} null product descriptions in product dimension.")
 # I will filter out these transactions to improve data quality.
 remove_nulls_from_consolidated_data = cons_df.dropna() 
 print(f"""Removed {len(cons_df) - len(remove_nulls_from_consolidated_data)} rows in Transaction dataset due to null products.""")
-remove_nulls_from_consolidated_data.to_csv("../files/analysis_dataset_cleaned.csv")
+remove_nulls_from_consolidated_data.to_csv("../files/analysis_dataset_cleaned.csv", index=False)
 if os.path.exists("../files/analysis_dataset_cleaned.csv"):
     print("Created analysis_dataset_cleaned.csv dataset for use")
 else:

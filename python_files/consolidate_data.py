@@ -30,10 +30,11 @@ transaction_dim_df = pd.read_csv(transaction_dim)
 add_prsn_id_to_txn_df = pd.merge(transaction_dim_df, card_dim_df, how="left", on="card_id")
 add_prod_dm_to_txn_df = pd.merge(add_prsn_id_to_txn_df, prod_dim_df, how="left", on="prod_id")
 consolidated_txn_df = pd.merge(add_prod_dm_to_txn_df, store_dim_df, how="left", on="store_id")
+consolidated_txn_df['week_day'] = pd.to_datetime(consolidated_txn_df.date_id).dt.day_name()
 
 
 # Output for further analysis
-consolidated_txn_df.to_csv("../files/consolidated_txn_data.csv")
+consolidated_txn_df.to_csv("../files/consolidated_txn_data.csv", index=False)
 if os.path.exists("../files/consolidated_txn_data.csv"):
     print(f"""
         consolidated_txn_data.csv created with: 
