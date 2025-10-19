@@ -13,24 +13,39 @@ from bx_plots import create_box_plot
 st.set_page_config(layout="wide")
 
 
+
 #########################################
 #        s1. Data Exploration           #
 ########################################
-st.markdown('''
-# :blue[Data Exploration]
-##### We start by identifying data features that can be used to distinguish customer Loyalty.
+st.markdown('''# :blue[Data Exploration & Feature Selection]''')
+st.markdown('''##### We start by identifying data features that can be used to distinguish customer Loyalty, and viewing their distribution in general.
 1. The :blue[**Frequency**] of visits
 2. How :blue[**Recently**] each customer visited
 3. The amount that each customer has :blue[**Spent**].
 ''')
+st.write('Histograms here')
+st.divider()
 
-st.header('Box Plot')
+
+
+
+#########################################
+#        s2. Data Exploration           #
+########################################
+st.markdown("# :blue[Outlier Distribution]")
 field_list = ['total_spend', 'visits', 'time_from_last_visit']
 with st.container():
     cols = st.columns(3)
     for item, col in zip(field_list, cols):
         with col:
            create_box_plot(item)
+
+st.markdown('''
+##### From the box plots about, we see that the data is :blue[heavily saturated by outlier values]. Before we can group our customers into segments along our selected features, we will need to clean these values from the dataset''')
+st.divider()
+
+
+
 
 
 ###############################
