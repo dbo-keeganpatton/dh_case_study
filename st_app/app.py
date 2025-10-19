@@ -127,4 +127,25 @@ frame = pd.DataFrame({'Cluster': range(1, 10), 'SSE': SSE})
 st.line_chart(frame, x='Cluster', y='SSE')
 
 
+#############################
+#   Create Kmeans Cluster   #
+#############################
+kmeans = KMeans(n_clusters=3, init='k-means++')
+kmeans.fit(scaled_features)
+s_score = silhouette_score(scaled_features, kmeans.labels_, metric='euclidean')
+st.metric(label='Silhouette Score', value=s_score)
+
+pred = kmeans.predict(scaled_features)
+frame = pd.DataFrame(rfm_outliers_removed)
+frame['cluster'] = pred
+st.write(frame)
+
+plot_cluster_df = frame.groupby(['cluster'], as_index=False).mean()
+with st.container():
+    cols = st.columns(3)
+    for item, col in zip(field_list, cols):
+        with col:
+            st.bar_chart(data=plot_cluster_df, x='cluster', y=item)
+st.divider()
+
 
