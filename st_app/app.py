@@ -1,35 +1,18 @@
+import sys
 import numpy as np
 import pandas as pd
 import streamlit as st
 from scipy import stats
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import StandardScaler
-from sklearn.datasets import make_blobs
 from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
-from sklearn.decomposition import PCA
+sys.path.append("./query_apis")
+from model_data import get_data
 conn = st.connection('case_study_db', type='sql')
-
-
 st.set_page_config(layout="wide")
-# Just output the consolidated data
-st.subheader("Data Shape")
-st.write(conn.query("select * from transactions").head())
+rfm_df = get_data()
 
-
-# The next sections will look at how recent we saw a visit from each customer
-# How often we see them return, and their overall spend value for creating
-# groupings
-rfm_df = conn.query(
-    """
-    select distinct 
-    prsn_id,
-    item_qty,
-    transaction_code,
-    net_spend_amt,
-    date_id
-    from transactions
-    """)
 
 ################################
 #           Recency            #
@@ -42,7 +25,7 @@ customer_last_visit_df['time_from_last_visit'] = (
     customer_last_visit_df['date_id'] - min(customer_last_visit_df['date_id']) 
 ).dt.days
 st.write(customer_last_visit_df.head())
-st.divider()
+
 
 
 ################################
@@ -138,14 +121,16 @@ st.metric(label='Silhouette Score', value=s_score)
 pred = kmeans.predict(scaled_features)
 frame = pd.DataFrame(rfm_outliers_removed)
 frame['cluster'] = pred
-st.write(frame)
 
+
+st.subheader("""We observe that customers in Cluster 0 have a high spend, frequently visit, and have patronized our store recently.
+""")
 plot_cluster_df = frame.groupby(['cluster'], as_index=False).mean()
 with st.container():
     cols = st.columns(3)
     for item, col in zip(field_list, cols):
         with col:
-            st.bar_chart(data=plot_cluster_df, x='cluster', y=item)
+            st.bar_chart(data=plot_cluster_df, x='cluster', y=item, color='cluster')
 st.divider()
 
 
