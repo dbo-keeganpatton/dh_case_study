@@ -114,6 +114,14 @@ with st.container(border=True):
     create_cluster_line_plot()
 
 
+
+#########################################
+#      s5. Validate Cluster Choice      #
+#########################################
+
+
+
+
 #############################
 #   Create Kmeans Cluster   #
 #############################
