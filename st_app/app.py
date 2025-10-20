@@ -10,33 +10,45 @@ from sklearn.metrics import silhouette_score
 sys.path.append("./components/visuals/")
 sys.path.append("./components/data_sets/")
 from bx_plots import create_box_plot
+from hg_plots import create_histogram
 st.set_page_config(layout="wide")
 
 
 
 #########################################
-#        s1. Data Exploration           #
-########################################
-st.markdown('''# :blue[Data Exploration & Feature Selection]''')
-st.markdown('''##### We start by identifying data features that can be used to distinguish customer Loyalty, and viewing their distribution in general.
-1. The :blue[**Frequency**] of visits
-2. How :blue[**Recently**] each customer visited
-3. The amount that each customer has :blue[**Spent**].
-''')
-st.write('Histograms here')
-st.divider()
-
+#            Reusable Vars              #
+#########################################
+feature_list = ['total_spend', 'visits', 'time_from_last_visit']
 
 
 
 #########################################
-#        s2. Data Exploration           #
-########################################
-st.markdown("# :blue[Outlier Distribution]")
-field_list = ['total_spend', 'visits', 'time_from_last_visit']
+#        s1. Data Exploration           #
+#########################################
+st.markdown('''# :blue[Data Exploration & Feature Selection]''')
+st.markdown('''##### We start by identifying data features that can be used to distinguish customer Loyalty, and viewing their distribution in general.
+1. :blue[**Recency**] of last visit for each customer.
+2. :blue[**Frequency**] of visits.
+3. :blue[**Total Spent**] by each customer.
+''')
+st.write('Histograms here')
 with st.container():
     cols = st.columns(3)
-    for item, col in zip(field_list, cols):
+    for item, col in zip(feature_list, cols):
+        with col:
+           create_histogram(item)
+            
+st.divider()
+
+
+
+#########################################
+#        s2. Outlier Detection          #
+########################################
+st.markdown("# :blue[Outlier Distribution]")
+with st.container():
+    cols = st.columns(3)
+    for item, col in zip(feature_list, cols):
         with col:
            create_box_plot(item)
 
