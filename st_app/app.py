@@ -8,7 +8,7 @@ from bx_plots import create_box_plot
 from hg_plots import create_histogram
 from cln_bx_plot import create_clean_box_plot
 from cluster_line import create_cluster_line_plot 
-from silhouette_card import create_silhouette_score_kpi 
+from cluster_bars import create_kmeans_bar
 st.set_page_config(layout="wide")
 
 
@@ -118,26 +118,50 @@ with st.container(border=True):
 #########################################
 #      s5. Validate Cluster Choice      #
 #########################################
-st.markdown('''# :blue[Validate Cluster Choice]''')
+st.markdown('''# :blue[Cluster Validation - Silhouette Score]''')
 with st.container(border=True):
-    st.markdown('''##### Testing Cluster Choice''')
-    create_silhouette_score_kpi()
+    st.markdown('''
+            ##### Deriving our silhouette score for the chosen number of clusters arrives at a value of :blue[0.53] which indicates a good amount of separation between our cluster edges.
+            ''')
+
+
+    st.code(
+        body='''
+        from sklearn.cluster import KMeans
+        from sklearn.metrics import silhouette_score
+        from sklearn.preprocessing import StandardScaler
+
+        data = clean_rfm_data_outliers()
+        scalar = StandardScaler().fit(data.values)
+        features = scalar.transform(data.values)
+        scaled_features = pd.DataFrame(
+            features,
+            columns=['total_spend', 'visits', 'time_from_last_visit']
+        )
+
+        kmeans = KMeans(n_clusters=3, init='k-means++')
+        kmeans.fit(scaled_features)
+        s_score = round(
+            silhouette_score(scaled_features, kmeans.labels_, metric='euclidean'),
+            2
+        )''',
+        language='python'
+    )
 
 
 
-pred = kmeans.predict(scaled_features)
-frame = pd.DataFrame(rfm_outliers_removed)
-frame['cluster'] = pred
+
+
+
 
 
 st.subheader("""We observe that customers in Cluster 0 have a high spend, frequently visit, and have patronized our store recently.
 """)
-plot_cluster_df = frame.groupby(['cluster'], as_index=False).mean()
 with st.container():
     cols = st.columns(3)
-    for item, col in zip(field_list, cols):
+    for item, col in zip(feature_list, cols):
         with col:
-            st.bar_chart(data=plot_cluster_df, x='cluster', y=item, color='cluster')
+            create_kmeans_bar(item)
 st.divider()
 
 

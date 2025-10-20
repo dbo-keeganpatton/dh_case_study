@@ -3,13 +3,12 @@ import pandas as pd
 import streamlit as st
 sys.path.append("../data_sets/")
 from sklearn.cluster import KMeans
-from sklearn.metrics import silhouette_score
 from sklearn.preprocessing import StandardScaler
 from rfm_outlier_removed import clean_rfm_data_outliers
 
 
 
-def create_silhouette_score_kpi():
+def create_kmeans_bar(col):
 
     data = clean_rfm_data_outliers()
     scalar = StandardScaler().fit(data.values)
@@ -19,17 +18,20 @@ def create_silhouette_score_kpi():
         columns=['total_spend', 'visits', 'time_from_last_visit']
     )
 
-
     kmeans = KMeans(n_clusters=3, init='k-means++')
     kmeans.fit(scaled_features)
-    s_score = round(
-            silhouette_score(scaled_features, kmeans.labels_, metric='euclidean'),
-            2
+    pred = kmeans.predict(scaled_features)
+    frame = pd.DataFrame(data)
+    frame['cluster'] = pred
+
+    plot_cluster_df = frame.groupby(['cluster'], as_index=False).mean()
+
+    return st.bar_chart(
+        data=plot_cluster_df,
+        x='cluster',
+        y=col,
+        color='cluster'
     )
 
-    return st.metric(
-        label="Score", 
-        value=s_score
-    )
 
 
