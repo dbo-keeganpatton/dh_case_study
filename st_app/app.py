@@ -2,15 +2,13 @@ import sys
 import numpy as np
 import pandas as pd
 import streamlit as st
-from scipy import stats
-import matplotlib.pyplot as plt
-from sklearn.preprocessing import StandardScaler
-from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
 sys.path.append("./components/visuals/")
 sys.path.append("./components/data_sets/")
 from bx_plots import create_box_plot
 from hg_plots import create_histogram
+from cln_bx_plot import create_clean_box_plot
+from cluster_line import create_cluster_line_plot 
 st.set_page_config(layout="wide")
 
 
@@ -68,40 +66,52 @@ st.divider()
 
 
 
+#########################################
+#         s3. Outlier Removal           #
+#########################################
+st.markdown('''# :blue[Outlier Removal]''')
+with st.container(border=True):
+
+    st.markdown('''
+    ##### We can determine the threshold by which we determine a value to be an outlier by calculating each value's :blue[Z-Score], which calculates the number of standard deviations each value is from the average of the dataset.
+    ''')
+    st.markdown('''
+    ##### For our test here, we will remove all data that is more than a single standard deviation from our mean values.
+    ''')
+
+    st.code(
+        body='''
+            import numpy as np
+            from scipy import stats
+
+            z_score_df = rfm[['total_spend', 'visits', 'time_from_last_visit']]
+            z_score = np.abs(stats.zscore(z_score_df))
+            remove_outliers = (z_score < 2).all(axis=1) 
+            rfm_outliers_removed = z_score_df[remove_outliers]''',
+        language='python'
+    )
+
+    st.markdown('''##### We can see that that this has dramatically widened the :blue[IQR] for our plot, improving our dataset's quality.''')
+    with st.container():
+        cols = st.columns(3)
+        for item, col in zip(feature_list, cols):
+            with col:
+               create_clean_box_plot(item)
+
+st.divider()
 
 
-###############################
-#       Remove Outliers       #
-##############################
-z_score_df = rfm[['total_spend', 'visits', 'time_from_last_visit']]
-z_score = np.abs(stats.zscore(z_score_df))
-remove_outliers = (z_score < 2).all(axis=1) 
-rfm_outliers_removed = z_score_df[remove_outliers]
 
+#########################################
+#         s4. Cluster Testing           #
+#########################################
+st.markdown('''# :blue[Cluster Testing]''')
+with st.container(border=True):
+    
+    st.markdown('''##### We will use the elbow method to test our optimal cluster number, by running the K-Means algorith on each number of clusters from 1 to 10. The inflection point of this series, or "Elbow", indicates the best value as it will provide the greatest number of segments, while minimizing the number of errors.''')
 
-##############################
-#       Normalize Data       #
-##############################
-st.subheader('Standardized Dataset')
-rfm_outliers_removed.drop_duplicates()
-scalar = StandardScaler().fit(rfm_outliers_removed.values)
-features = scalar.transform(rfm_outliers_removed.values)
-scaled_features = pd.DataFrame(features, columns=['total_spend', 'visits', 'time_from_last_visit'])
-st.write(scaled_features)
-
-
-#############################
-#  Determine # of Clusters  #
-#############################
-st.write('Inflection Point indicated at the elbow which lies at 3 clusters')
-SSE = []
-for cluster in range(1, 10):
-    kmeans = KMeans(n_clusters=cluster, init='k-means++')
-    kmeans.fit(scaled_features)
-    SSE.append(kmeans.inertia_)
-
-frame = pd.DataFrame({'Cluster': range(1, 10), 'SSE': SSE})
-st.line_chart(frame, x='Cluster', y='SSE')
+    st.markdown('''##### The resulting plot below shows that :blue[3 Clusters] will be the best path forward.''')
+    create_cluster_line_plot()
 
 
 #############################
