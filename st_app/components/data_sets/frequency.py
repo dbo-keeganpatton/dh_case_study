@@ -1,5 +1,3 @@
-import sys
-import pandas as pd
 import streamlit as st
 from model_data import get_data
 conn = st.connection('case_study_db', type='sql')

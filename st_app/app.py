@@ -26,18 +26,25 @@ feature_list = ['total_spend', 'visits', 'time_from_last_visit']
 #        s1. Data Exploration           #
 #########################################
 st.markdown('''# :blue[Data Exploration & Feature Selection]''')
-st.markdown('''##### We start by identifying data features that can be used to distinguish customer Loyalty, and viewing their distribution in general.
-1. :blue[**Recency**] of last visit for each customer.
-2. :blue[**Frequency**] of visits.
-3. :blue[**Total Spent**] by each customer.
-''')
-st.write('Histograms here')
-with st.container():
-    cols = st.columns(3)
-    for item, col in zip(feature_list, cols):
-        with col:
-           create_histogram(item)
-            
+with st.container(border=True):
+    st.markdown(
+        '''##### We start by identifying data features that can be used to distinguish customer Loyalty, and viewing their distribution in general.
+        ''')
+    st.markdown(
+        '''
+        1. :blue[**Recency**] of last visit for each customer.
+        2. :blue[**Frequency**] of visits.
+        3. :blue[**Total Spent**] by each customer.
+        '''
+    )
+    st.markdown('''##### Overall, we observe that this data is heavily :blue[left skewed], indicating not only an abnormal distribution, but also the presence of several outliers that will affect our clustering further on.''')
+
+    with st.container():
+        cols = st.columns(3)
+        for item, col in zip(feature_list, cols):
+            with col:
+               create_histogram(item)
+                
 st.divider()
 
 
@@ -46,14 +53,17 @@ st.divider()
 #        s2. Outlier Detection          #
 ########################################
 st.markdown("# :blue[Outlier Distribution]")
-with st.container():
-    cols = st.columns(3)
-    for item, col in zip(feature_list, cols):
-        with col:
-           create_box_plot(item)
+with st.container(border=True):
+    st.markdown('''
+    ##### A classic box plot can help us confirm the presence of numerous outliers. From this we can see that each feature will need to be sanitized of outliers.
+    ''')
 
-st.markdown('''
-##### From the box plots about, we see that the data is :blue[heavily saturated by outlier values]. Before we can group our customers into segments along our selected features, we will need to clean these values from the dataset''')
+    with st.container():
+        cols = st.columns(3)
+        for item, col in zip(feature_list, cols):
+            with col:
+               create_box_plot(item)
+
 st.divider()
 
 

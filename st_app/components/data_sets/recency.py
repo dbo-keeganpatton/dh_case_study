@@ -1,4 +1,3 @@
-import sys
 import pandas as pd
 import streamlit as st
 from model_data import get_data

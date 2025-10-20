@@ -8,7 +8,15 @@ def create_histogram(col):
 
     data = rfm_data()
     fig, ax = plt.subplots()
-    data[col].hist(ax=ax, bins=5)
+    plt.title(col)
+    data[col].hist(
+        ax=ax,
+        bins=5,
+        grid=False,
+        rwidth=0.8,
+        edgecolor='black',
+        ylabelsize=0
+    )
 
     return st.pyplot(fig)
 
