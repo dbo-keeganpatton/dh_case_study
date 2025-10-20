@@ -3,12 +3,13 @@ import pandas as pd
 import streamlit as st
 sys.path.append("../data_sets/")
 from sklearn.cluster import KMeans
+from sklearn.metrics import silhouette_score
 from sklearn.preprocessing import StandardScaler
 from rfm_outlier_removed import clean_rfm_data_outliers
 
 
 
-def create_cluster_line_plot():
+def create_silhouette_score_kpi():
 
     data = clean_rfm_data_outliers()
     scalar = StandardScaler().fit(data.values)

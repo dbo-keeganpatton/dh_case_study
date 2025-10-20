@@ -2,13 +2,13 @@ import sys
 import numpy as np
 import pandas as pd
 import streamlit as st
-from sklearn.metrics import silhouette_score
 sys.path.append("./components/visuals/")
 sys.path.append("./components/data_sets/")
 from bx_plots import create_box_plot
 from hg_plots import create_histogram
 from cln_bx_plot import create_clean_box_plot
 from cluster_line import create_cluster_line_plot 
+from silhouette_card import create_silhouette_score_kpi 
 st.set_page_config(layout="wide")
 
 
@@ -118,17 +118,12 @@ with st.container(border=True):
 #########################################
 #      s5. Validate Cluster Choice      #
 #########################################
+st.markdown('''# :blue[Validate Cluster Choice]''')
+with st.container(border=True):
+    st.markdown('''##### Testing Cluster Choice''')
+    create_silhouette_score_kpi()
 
 
-
-
-#############################
-#   Create Kmeans Cluster   #
-#############################
-kmeans = KMeans(n_clusters=3, init='k-means++')
-kmeans.fit(scaled_features)
-s_score = silhouette_score(scaled_features, kmeans.labels_, metric='euclidean')
-st.metric(label='Silhouette Score', value=s_score)
 
 pred = kmeans.predict(scaled_features)
 frame = pd.DataFrame(rfm_outliers_removed)
