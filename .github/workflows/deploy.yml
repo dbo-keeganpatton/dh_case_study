@@ -13,28 +13,22 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Install Heroku CLI
-        run: |
-          curl https://cli-assets.heroku.com/install.sh | sh
-
       - name: Log in to Heroku Container Registry
         env:
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
         run: |
-          echo "$HEROKU_API_KEY" | heroku auth:token
-          heroku container:login
+          echo $HEROKU_API_KEY | docker login --username=_ --password-stdin registry.heroku.com
 
-      - name: Set Heroku Stack
-        env:
-          HEROKU_APP_NAME: segment-case-study
+      - name: Install Heroku CLI
         run: |
-          heroku stack:set container --app $HEROKU_APP_NAME
+          curl https://cli-assets.heroku.com/install.sh | sh
 
       - name: Build, Push, and Release Docker image
         env:
-          HEROKU_APP_NAME: segment-case-study
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+          HEROKU_APP_NAME: segment-case-study 
         run: |
           docker build -t registry.heroku.com/$HEROKU_APP_NAME/web .
           docker push registry.heroku.com/$HEROKU_APP_NAME/web
+          heroku auth:token
           heroku container:release web --app $HEROKU_APP_NAME
-
