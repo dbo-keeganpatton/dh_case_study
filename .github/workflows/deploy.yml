@@ -23,6 +23,12 @@ jobs:
         run: |
           echo $HEROKU_API_KEY | docker login --username=_ --password-stdin registry.heroku.com
 
+      - name: Set Heroku Stack
+        env:
+          HEROKU_APP_NAME: segment-case-study
+        run: |
+          heroku stack:set container --app $HEROKU_APP_NAME
+
       - name: Build, Push, and Release Docker image
         env:
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
