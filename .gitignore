@@ -2,8 +2,6 @@
 **.docx
 *.zip
 *.json
-*.yaml
-*.yml
 *.DS_STORE
 case_study_venv/
 *technical_case_study_data/
