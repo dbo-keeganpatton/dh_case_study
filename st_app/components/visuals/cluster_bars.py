@@ -18,7 +18,7 @@ def create_kmeans_bar(col):
         columns=['total_spend', 'visits', 'time_from_last_visit']
     )
 
-    kmeans = KMeans(n_clusters=3, init='k-means++')
+    kmeans = KMeans(n_clusters=3, init='k-means++', random_state=42)
     kmeans.fit(scaled_features)
     pred = kmeans.predict(scaled_features)
     frame = pd.DataFrame(data)

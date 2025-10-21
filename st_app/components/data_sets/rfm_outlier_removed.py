@@ -4,7 +4,6 @@ import streamlit as st
 import numpy as np
 
 
-@st.cache_data
 def clean_rfm_data_outliers():
 
     rfm = rfm_data()
@@ -12,7 +11,7 @@ def clean_rfm_data_outliers():
     z_score = np.abs(stats.zscore(z_score_df))
     remove_outliers = (z_score < 2).all(axis=1) 
     rfm_outliers_removed = z_score_df[remove_outliers]
-    rfm_outliers_removed.drop_duplicates()
+    rfm_outliers_removed = rfm_outliers_removed.drop_duplicates()
 
     return rfm_outliers_removed
     

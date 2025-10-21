@@ -2,6 +2,7 @@ import sys
 import numpy as np
 import pandas as pd
 import streamlit as st
+sys.path.append("./components/")
 sys.path.append("./components/visuals/")
 sys.path.append("./components/data_sets/")
 from bx_plots import create_box_plot
@@ -9,6 +10,7 @@ from hg_plots import create_histogram
 from cln_bx_plot import create_clean_box_plot
 from cluster_line import create_cluster_line_plot 
 from cluster_bars import create_kmeans_bar
+from s_score import silhouette_score_text 
 st.set_page_config(layout="wide")
 
 
@@ -120,9 +122,8 @@ with st.container(border=True):
 #########################################
 st.markdown('''# :blue[Cluster Validation - Silhouette Score]''')
 with st.container(border=True):
-    st.markdown('''
-            ##### Deriving our silhouette score for the chosen number of clusters arrives at a value of :blue[0.53] which indicates a good amount of separation between our cluster edges.
-            ''')
+    st.markdown(f"""
+    ##### Deriving our silhouette score for the chosen number of clusters arrives at a value of :blue[{silhouette_score_text()}] which indicates a good amount of separation between our cluster edges.""")
 
 
     st.code(

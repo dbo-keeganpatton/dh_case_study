@@ -4,7 +4,6 @@ from frequency import frequency_data
 from spend import spend_data
 
 
-@st.cache_data
 def rfm_data():
 
     spend_df = spend_data()
