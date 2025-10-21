@@ -14,18 +14,17 @@ from s_score import silhouette_score_text
 st.set_page_config(layout="wide")
 
 
-
+st.title("Customer Loyalty Segmentation Lab")
 #########################################
 #            Reusable Vars              #
 #########################################
 feature_list = ['total_spend', 'visits', 'time_from_last_visit']
 
 
-
 #########################################
 #        s1. Data Exploration           #
 #########################################
-st.markdown('''# :blue[Data Exploration & Feature Selection]''')
+st.markdown('''## :blue[Data Exploration & Feature Selection]''')
 with st.container(border=True):
     st.markdown(
         '''##### We start by identifying data features that can be used to distinguish customer Loyalty, and viewing their distribution in general.
@@ -52,7 +51,7 @@ st.divider()
 #########################################
 #        s2. Outlier Detection          #
 ########################################
-st.markdown("# :blue[Outlier Distribution]")
+st.markdown("## :blue[Outlier Distribution]")
 with st.container(border=True):
     st.markdown('''
     ##### A classic box plot can help us confirm the presence of numerous outliers. From this we can see that each feature will need to be sanitized of outliers.
@@ -71,7 +70,7 @@ st.divider()
 #########################################
 #         s3. Outlier Removal           #
 #########################################
-st.markdown('''# :blue[Outlier Removal]''')
+st.markdown('''## :blue[Outlier Removal]''')
 with st.container(border=True):
 
     st.markdown('''
@@ -107,20 +106,21 @@ st.divider()
 #########################################
 #         s4. Cluster Testing           #
 #########################################
-st.markdown('''# :blue[Cluster Testing]''')
+st.markdown('''## :blue[Cluster Testing]''')
 with st.container(border=True):
     
     st.markdown('''##### We will use the elbow method to test our optimal cluster number, by running the K-Means algorith on each number of clusters from 1 to 10. The inflection point of this series, or "Elbow", indicates the best value as it will provide the greatest number of segments, while minimizing the number of errors.''')
 
     st.markdown('''##### The resulting plot below shows that :blue[3 Clusters] will be the best path forward.''')
     create_cluster_line_plot()
+st.divider()
 
 
 
 #########################################
 #      s5. Validate Cluster Choice      #
 #########################################
-st.markdown('''# :blue[Cluster Validation - Silhouette Score]''')
+st.markdown('''## :blue[Cluster Validation - Silhouette Score]''')
 with st.container(border=True):
     st.markdown(f"""
     ##### Deriving our silhouette score for the chosen number of clusters arrives at a value of :blue[{silhouette_score_text()}] which indicates a good amount of separation between our cluster edges.""")
@@ -148,17 +148,18 @@ with st.container(border=True):
         )''',
         language='python'
     )
+st.divider()
 
 
 
+#########################################
+#      s6. Create and Plot Clusters     #
+#########################################
+st.markdown('''## :blue[K-Means Cluster Plot]''')
+with st.container(border=True):
 
+    st.markdown('''##### It is clear that one of our clusters is heavily situated positively for each of our loyalty features. We can begin to delineate the customers in that cluster and analyze consitent patterns in their :blue[shopping behavior] and :blue[product choices]''')
 
-
-
-
-st.subheader("""We observe that customers in Cluster 0 have a high spend, frequently visit, and have patronized our store recently.
-""")
-with st.container():
     cols = st.columns(3)
     for item, col in zip(feature_list, cols):
         with col:
