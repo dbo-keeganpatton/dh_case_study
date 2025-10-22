@@ -20,66 +20,54 @@ st.title("Customer Loyalty Segmentation Lab")
 #########################################
 feature_list = ['total_spend', 'visits', 'time_from_last_visit']
 
+#########################################
+#                Prompt                 #
+#########################################
+with st.container(border=True):
+    st.markdown('''
+    * Develop a customer-level segmentation classifying each customer into n number of segments dependent on loyalty.
+        1. What metrics were chosen to determine loyalty? 
+        2. How did you choose the number of customer segments?
+        3. In what ways could this segmentation be used to influence business strategy?
+    ''')
 
 #########################################
 #        s1. Data Exploration           #
 #########################################
 st.markdown('''## :blue[Data Exploration & Feature Selection]''')
 with st.container(border=True):
-    st.markdown(
-        '''##### We start by identifying data features that can be used to distinguish customer Loyalty, and viewing their distribution in general.
-        ''')
+    st.markdown('''We start by identifying potential features that can be used to distinguish customer Loyalty, and viewing their distribution in general across the consolidated dataset. A series of histograms show that this data is heavily :blue[left skewed], indicating not only an abnormal distribution, but also the presence of several outliers that will affect our clustering further on. These will need to be identified and removed for our clustering later on''')
     st.markdown(
         '''
-        1. :blue[**Recency**] of last visit for each customer.
-        2. :blue[**Frequency**] of visits.
-        3. :blue[**Total Spent**] by each customer.
+        1. :blue[**Frequency**] of visits.
+        2. :blue[**Total Spent**] by each customer.
+        3. :blue[**Recency**] of last visit for each customer.
         '''
     )
-    st.markdown('''##### Overall, we observe that this data is heavily :blue[left skewed], indicating not only an abnormal distribution, but also the presence of several outliers that will affect our clustering further on.''')
 
     with st.container():
         cols = st.columns(3)
         for item, col in zip(feature_list, cols):
             with col:
                create_histogram(item)
-                
-st.divider()
+    st.divider()
 
-
-
-#########################################
-#        s2. Outlier Detection          #
-########################################
-st.markdown("## :blue[Outlier Distribution]")
-with st.container(border=True):
-    st.markdown('''
-    ##### A classic box plot can help us confirm the presence of numerous outliers. From this we can see that each feature will need to be sanitized of outliers.
-    ''')
-
+    st.markdown('''We can further visulize the presence of outliers in the data with a series of box plots. From this it is obvious that each of our features will need some cleaning before feeding to our model.''')
     with st.container():
         cols = st.columns(3)
         for item, col in zip(feature_list, cols):
             with col:
                create_box_plot(item)
 
-st.divider()
-
-
+                
 
 #########################################
-#         s3. Outlier Removal           #
+#         s2. Outlier Removal           #
 #########################################
 st.markdown('''## :blue[Outlier Removal]''')
 with st.container(border=True):
 
-    st.markdown('''
-    ##### We can determine the threshold by which we determine a value to be an outlier by calculating each value's :blue[Z-Score], which calculates the number of standard deviations each value is from the average of the dataset.
-    ''')
-    st.markdown('''
-    ##### For our test here, we will remove all data that is more than a single standard deviation from our mean values.
-    ''')
-
+    st.markdown('''We know that outliers exist, but we need to determine the threshold by which we will classify a value as an outlier an remove them. This can be achieved by deriving each value's :blue[Z-Score]. Which calculates the distance from the dataset's mean measured in 'n' standard deviations.''')
     st.code(
         body='''
             import numpy as np
@@ -92,38 +80,30 @@ with st.container(border=True):
         language='python'
     )
 
-    st.markdown('''##### We can see that that this has dramatically widened the :blue[IQR] for our plot, improving our dataset's quality.''')
+    st.markdown('''Using the code above, we will remove all data that is :blue[more than a single standard deviation] from our mean values.''')
+    st.divider()
+    
+    st.markdown('''Removing these outliers has an effect of widening the :blue[IQR] for our 3 features, improving our data quality, and better positioning our data to fit to our model.''')
     with st.container():
         cols = st.columns(3)
         for item, col in zip(feature_list, cols):
             with col:
                create_clean_box_plot(item)
 
-st.divider()
-
 
 
 #########################################
-#         s4. Cluster Testing           #
+#         s3. Cluster Testing           #
 #########################################
-st.markdown('''## :blue[Cluster Testing]''')
+st.markdown('''## :blue[Model Selection & Cluster Testing]''')
 with st.container(border=True):
     
-    st.markdown('''##### We will use the elbow method to test our optimal cluster number, by running the K-Means algorith on each number of clusters from 1 to 10. The inflection point of this series, or "Elbow", indicates the best value as it will provide the greatest number of segments, while minimizing the number of errors.''')
-
-    st.markdown('''##### The resulting plot below shows that :blue[3 Clusters] will be the best path forward.''')
+    st.markdown('''For our excersice, we will be using a K-Means algorithm as our model by which to segment our customers. The first step is testing and selecting the number of clusters that will be optimal to lead us to a meaningful series of groups. We can test this by processing our data through K-Means several times with each iteration applying a different cluster number, and testing the :blue[Within-cluster sum of squares] for each iteration. This is known as the :blue[Elbow Method], and merely shows the point at which we are able to have the maximum number of clusters, while still retaining defined edges and separation for each one.''')
     create_cluster_line_plot()
-st.divider()
+    st.markdown('''The resulting plot above shows that :blue[3 Clusters] provides us with the most optimal number of clusters, while minimizing our :blue[WCSS]. This is indicated by the "elbow" of the chart where the line starts to bend further towards the y-orgin.''')
+    st.divider()
 
-
-
-#########################################
-#      s5. Validate Cluster Choice      #
-#########################################
-st.markdown('''## :blue[Cluster Validation - Silhouette Score]''')
-with st.container(border=True):
-    st.markdown(f"""
-    ##### Deriving our silhouette score for the chosen number of clusters arrives at a value of :blue[{silhouette_score_text()}] which indicates a good amount of separation between our cluster edges.""")
+    st.markdown(f"""We can further validate our decision by calculating the :blue[silhouette score] for the chosen number of clusters. This is a value between -1 and 1 that measures cluster separation and compactness. Sci-Kit learn provides native support for calculating this seen in the code excerpt below""")
 
 
     st.code(
@@ -148,22 +128,22 @@ with st.container(border=True):
         )''',
         language='python'
     )
-st.divider()
 
+    st.markdown(f"""## Silhouette Score [:blue[{silhouette_score_text()}]]""")
+    st.markdown('''Our resulting silhouette score is close to +1 and indicates solid cluster cohesion allowing us to proceed with creating and plotting our model.''')
 
 
 #########################################
-#      s6. Create and Plot Clusters     #
+#      s4. Create and Plot Clusters     #
 #########################################
 st.markdown('''## :blue[K-Means Cluster Plot]''')
 with st.container(border=True):
 
-    st.markdown('''##### It is clear that one of our clusters is heavily situated positively for each of our loyalty features. We can begin to delineate the customers in that cluster and analyze consitent patterns in their :blue[shopping behavior] and :blue[product choices]''')
+    st.markdown(f"Plotting our 3 clusters for each feature clearly shows that one of our clusters is highly aligned to patterns in each feature that would correlate with customer loyalty.")
 
     cols = st.columns(3)
     for item, col in zip(feature_list, cols):
         with col:
             create_kmeans_bar(item)
-st.divider()
-
+    
 
