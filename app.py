@@ -11,7 +11,11 @@ from cln_bx_plot import create_clean_box_plot
 from cluster_line import create_cluster_line_plot 
 from cluster_bars import create_kmeans_bar
 from s_score import silhouette_score_text 
-st.set_page_config(layout="wide")
+st.set_page_config(
+    layout="wide",
+    page_title="DH Case Study",
+    page_icon="🐳"
+)
 
 
 st.title("Customer Loyalty Segmentation Lab")
