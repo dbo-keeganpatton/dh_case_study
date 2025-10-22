@@ -11,6 +11,8 @@ from cln_bx_plot import create_clean_box_plot
 from cluster_line import create_cluster_line_plot 
 from cluster_bars import create_kmeans_bar
 from s_score import silhouette_score_text 
+from cluster2_top_items import top_products 
+from cluster2_top_weekdays import top_weekdays
 st.set_page_config(
     layout="wide",
     page_title="DH Case Study",
@@ -151,3 +153,13 @@ with st.container(border=True):
             create_kmeans_bar(item)
     
 
+
+st.markdown('''## :blue[Potential Strategy]''')
+with st.container(border=True):
+    col1, col2 = st.columns(2)
+    with col1:
+        st.subheader('Products')
+        top_products()
+    with col2:
+        st.subheader('Days')
+        top_weekdays()
