@@ -21,6 +21,7 @@ st.set_page_config(
 
 
 st.title("Customer Loyalty Segmentation Lab")
+st.link_button(label="View Project Code Repository", url="https://github.com/dbo-keeganpatton/dh_case_study")
 #########################################
 #            Reusable Vars              #
 #########################################
